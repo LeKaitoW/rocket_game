@@ -1,4 +1,4 @@
-package A_heuristic;
+package rocket_game;
 
 public class Hole extends Cell {
 

@@ -1,4 +1,4 @@
-package A_heuristic;
+package rocket_game;
 
 import java.util.ArrayList;
 import java.util.Arrays;

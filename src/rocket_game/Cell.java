@@ -1,4 +1,4 @@
-package A_heuristic;
+package rocket_game;
 
 public class Cell {
 	protected int value;
