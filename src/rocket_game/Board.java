@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 
 public class Board {
@@ -105,15 +106,30 @@ public class Board {
 	}
 
 	public int heuristicRate() {
-		int sumFromFirst = 100;
-		int sumFromSecond = 0;
-		for (int i = 0; i < 3; i++) {
-			//sumFromFirst += Math.abs(nodes.get(i + 11).getColumns().get(0) + i - 3);
-			//sumFromSecond += Math.abs(nodes.get(i + 11).getColumns().get(0) + (i + 1) - 3);
-			sumFromFirst -= Math.abs(13 - nodes.get(i+10).getValue() - nodes.get(i + 10).getColumns().get(0));
+		/*
+		 * int sumFromFirst = 100; int sumFromSecond = 0; for (int i = 0; i < 3;
+		 * i++) { //sumFromFirst += Math.abs(nodes.get(i +
+		 * 11).getColumns().get(0) + i - 3); //sumFromSecond +=
+		 * Math.abs(nodes.get(i + 11).getColumns().get(0) + (i + 1) - 3);
+		 * sumFromFirst -= Math.abs(13 - nodes.get(i+10).getValue() -
+		 * nodes.get(i + 10).getColumns().get(0)); } //return
+		 * Math.min(sumFromFirst, sumFromSecond); return sumFromFirst;
+		 */
+		List<Integer> letters = new ArrayList<>();
+		for (int i = 0; i < horizontalSize; i++) {
+			for (int j = 0; j < verticalSize; j++) {
+				if (position.get(j).get(i) instanceof Node && ((Node) position.get(j).get(i)).getOrient().equals("v")) {
+					if (!letters.contains(position.get(j).get(i).getValue()))
+						letters.add(position.get(j).get(i).getValue());
+				}
+			}
 		}
-		//return Math.min(sumFromFirst, sumFromSecond);
-		return sumFromFirst;
+		int rate = 4 - (letters.get(0) / letters.get(1) + letters.get(1) / letters.get(2)
+				+ letters.get(5) / letters.get(4) + letters.get(4) / letters.get(3));
+		for (Hole hole : holes) {
+			rate = rate * (hole.getColumn() + 1);
+		}
+		return rate;
 	}
 
 	private void convertToPosition() {
@@ -153,6 +169,5 @@ public class Board {
 
 	public void updateHeuristicRate(int path) {
 		heuristicRate = heuristicRate() + path + 1;
-
 	}
 }
