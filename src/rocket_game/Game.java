@@ -18,8 +18,8 @@ public class Game {
 	}
 
 	public void solution() {
-		for (int i = 0; i < 1000000; i++) {
-			System.out.println(i);
+		for (int i = 0; i < 900000; i++) {
+			// System.out.println(i);
 			// System.out.println("open");
 			// System.out.println(open);
 			// System.out.println("close");
@@ -42,10 +42,13 @@ public class Game {
 			// System.out.println(minRate);
 			if (checkEnd(currentBoard))
 				break;
-			// if (i%100==0){
-			// System.out.println(currentBoard);
-			// currentBoard.printPosition();
-			// System.out.println();
+			if (i % 1000 == 0) {
+				System.out.println(i);
+				System.out.print("open+close: ");
+				System.out.println(open.size() + close.size());
+				currentBoard.printPosition();
+				System.out.println();
+			}
 			for (Hole hole : currentBoard.getHoles()) {
 				Board copyUp = new Board(currentBoard);
 				if (hole.getRow() < 4
@@ -120,11 +123,14 @@ public class Game {
 		List<Node> oldNodes = old.getNodes();
 		List<Node> currentNodes = current.getNodes();
 		for (int i = 0; i < oldNodes.size(); i++) {
-			for (int j = 0; j < oldNodes.get(i).getSize(); j++) {
-				if (oldNodes.get(i).getRows().get(j) != currentNodes.get(i).getRows().get(j)
-						|| oldNodes.get(i).getColumns().get(j) != currentNodes.get(i).getColumns().get(j))
-					return false;
+			if (oldNodes.get(i).getOrient().equals("v")) {
+				for (int j = 0; j < oldNodes.get(i).getSize(); j++) {
+					if (oldNodes.get(i).getRows().get(j) != currentNodes.get(i).getRows().get(j)
+							|| oldNodes.get(i).getColumns().get(j) != currentNodes.get(i).getColumns().get(j))
+						return false;
+				}
 			}
+
 		}
 		return true;
 	}

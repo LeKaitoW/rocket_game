@@ -124,11 +124,31 @@ public class Board {
 				}
 			}
 		}
-		int rate = 4 - (letters.get(0) / letters.get(1) + letters.get(1) / letters.get(2)
-				+ letters.get(5) / letters.get(4) + letters.get(4) / letters.get(3));
-		for (Hole hole : holes) {
-			rate = rate * (hole.getColumn() + 1);
-		}
+		int rate = letters.get(1) / letters.get(0) + letters.get(2) / letters.get(0) + letters.get(0) / letters.get(3)
+				+ letters.get(0) / letters.get(4) + letters.get(0) / letters.get(5) + letters.get(2) / letters.get(1)
+				+ letters.get(1) / letters.get(3) + letters.get(1) / letters.get(4) + letters.get(1) / letters.get(5)
+				+ letters.get(2) / letters.get(3) + letters.get(2) / letters.get(4) + letters.get(2) / letters.get(5)
+				+ letters.get(3) / letters.get(4) + letters.get(3) / letters.get(5) + letters.get(4) / letters.get(5);
+		/*
+		 * if (nodes.get(12).getColumns().get(0) >
+		 * nodes.get(11).getColumns().get(0)) rate = rate+10; if
+		 * (nodes.get(11).getColumns().get(0) >
+		 * nodes.get(10).getColumns().get(0)) rate = rate + 10; if
+		 * (nodes.get(10).getColumns().get(0) >
+		 * nodes.get(13).getColumns().get(0)) rate = rate + 10; if
+		 * (nodes.get(13).getColumns().get(0) >
+		 * nodes.get(14).getColumns().get(0)) rate = rate + 10;
+		 * if(nodes.get(14).getColumns().get(0) >
+		 * nodes.get(15).getColumns().get(0)) rate = rate + 10;
+		 */
+		// for ()
+		/*
+		 * for (Hole hole : holes) { //rate = rate * (hole.getColumn() + 1);
+		 * switch (hole.getColumn()){ case 4: case 5: case 6: rate = rate *
+		 * (hole.getColumn()); break; }
+		 * 
+		 * }
+		 */
 		return rate;
 	}
 
