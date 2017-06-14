@@ -10,8 +10,8 @@ public class Hole extends Cell {
 		this.row = row;
 		this.column = column;
 	}
-	
-	public Hole(Hole hole){
+
+	public Hole(Hole hole) {
 		this(hole.getRow(), hole.getColumn());
 	}
 
@@ -23,11 +23,11 @@ public class Hole extends Cell {
 		return column;
 	}
 
-	public void set(int row, int column){
+	public void set(int row, int column) {
 		this.row = row;
 		this.column = column;
 	}
-	
+
 	public void setRow(int row) {
 		this.row = row;
 	}

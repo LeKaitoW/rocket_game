@@ -2,22 +2,18 @@ package rocket_game;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Board {
 	private final int verticalSize = 5;
 	private final int horizontalSize = 7;
 
-	/*
-	 * Р - 1 или 2 - 13 А - 2 или 3 - 12 К - 3 или 4 - 11 Е - 4 или 5 - 14 Т - 5
-	 * или 6 - 15 А - 6 или 7 - 16
-	 */
-
 	private List<Hole> holes = new ArrayList<>();
-	private List<Node> nodes = new ArrayList<>();
+	private List<VNode> vNodes = new ArrayList<>();
+	private List<HNode> hNodes = new ArrayList<>();
 	private List<List<Cell>> position = new ArrayList<List<Cell>>();
 	private int heuristicRate;
 
@@ -29,46 +25,44 @@ public class Board {
 		holes.add(new Hole(2, 3));
 		holes.add(new Hole(2, 6));
 
-		nodes.add(0, new Node(1, new ArrayList<>(Arrays.asList(0, 0)), new ArrayList<>(Arrays.asList(0, 1))));
-		nodes.add(1, new Node(2, new ArrayList<>(Arrays.asList(0, 0)), new ArrayList<>(Arrays.asList(2, 3))));
-		nodes.add(2, new Node(3, new ArrayList<>(Arrays.asList(0, 0)), new ArrayList<>(Arrays.asList(4, 5))));
-		nodes.add(3, new Node(4, new ArrayList<>(Arrays.asList(1, 1)), new ArrayList<>(Arrays.asList(0, 1))));
-		nodes.add(4, new Node(5, new ArrayList<>(Arrays.asList(1, 1)), new ArrayList<>(Arrays.asList(3, 4))));
-		nodes.add(5, new Node(6, new ArrayList<>(Arrays.asList(3, 3)), new ArrayList<>(Arrays.asList(2, 3))));
-		nodes.add(6, new Node(7, new ArrayList<>(Arrays.asList(3, 3)), new ArrayList<>(Arrays.asList(5, 6))));
-		nodes.add(7, new Node(8, new ArrayList<>(Arrays.asList(4, 4)), new ArrayList<>(Arrays.asList(1, 2))));
-		nodes.add(8, new Node(9, new ArrayList<>(Arrays.asList(4, 4)), new ArrayList<>(Arrays.asList(3, 4))));
-		nodes.add(9, new Node(10, new ArrayList<>(Arrays.asList(4, 4)), new ArrayList<>(Arrays.asList(5, 6))));
-		nodes.add(10, new Node(11, new ArrayList<>(Arrays.asList(3, 4)), new ArrayList<>(Arrays.asList(0, 0))));
-		nodes.add(11, new Node(12, new ArrayList<>(Arrays.asList(2, 3)), new ArrayList<>(Arrays.asList(1, 1))));
-		nodes.add(12, new Node(13, new ArrayList<>(Arrays.asList(1, 2)), new ArrayList<>(Arrays.asList(2, 2))));
-		nodes.add(13, new Node(14, new ArrayList<>(Arrays.asList(2, 3)), new ArrayList<>(Arrays.asList(4, 4))));
-		nodes.add(14, new Node(15, new ArrayList<>(Arrays.asList(1, 2)), new ArrayList<>(Arrays.asList(5, 5))));
-		nodes.add(15, new Node(16, new ArrayList<>(Arrays.asList(0, 1)), new ArrayList<>(Arrays.asList(6, 6))));
+		hNodes.add(0, new HNode(1, new ArrayList<>(Arrays.asList(0, 0)), new ArrayList<>(Arrays.asList(0, 1))));
+		hNodes.add(1, new HNode(2, new ArrayList<>(Arrays.asList(0, 0)), new ArrayList<>(Arrays.asList(2, 3))));
+		hNodes.add(2, new HNode(3, new ArrayList<>(Arrays.asList(0, 0)), new ArrayList<>(Arrays.asList(4, 5))));
+		hNodes.add(3, new HNode(4, new ArrayList<>(Arrays.asList(1, 1)), new ArrayList<>(Arrays.asList(0, 1))));
+		hNodes.add(4, new HNode(5, new ArrayList<>(Arrays.asList(1, 1)), new ArrayList<>(Arrays.asList(3, 4))));
+		hNodes.add(5, new HNode(6, new ArrayList<>(Arrays.asList(3, 3)), new ArrayList<>(Arrays.asList(2, 3))));
+		hNodes.add(6, new HNode(7, new ArrayList<>(Arrays.asList(3, 3)), new ArrayList<>(Arrays.asList(5, 6))));
+		hNodes.add(7, new HNode(8, new ArrayList<>(Arrays.asList(4, 4)), new ArrayList<>(Arrays.asList(1, 2))));
+		hNodes.add(8, new HNode(9, new ArrayList<>(Arrays.asList(4, 4)), new ArrayList<>(Arrays.asList(3, 4))));
+		hNodes.add(9, new HNode(10, new ArrayList<>(Arrays.asList(4, 4)), new ArrayList<>(Arrays.asList(5, 6))));
+
+		vNodes.add(0, new VNode(11, new ArrayList<>(Arrays.asList(3, 4)), new ArrayList<>(Arrays.asList(0, 0))));
+		vNodes.add(1, new VNode(12, new ArrayList<>(Arrays.asList(2, 3)), new ArrayList<>(Arrays.asList(1, 1))));
+		vNodes.add(2, new VNode(13, new ArrayList<>(Arrays.asList(1, 2)), new ArrayList<>(Arrays.asList(2, 2))));
+		vNodes.add(3, new VNode(14, new ArrayList<>(Arrays.asList(2, 3)), new ArrayList<>(Arrays.asList(4, 4))));
+		vNodes.add(4, new VNode(15, new ArrayList<>(Arrays.asList(1, 2)), new ArrayList<>(Arrays.asList(5, 5))));
+		vNodes.add(5, new VNode(16, new ArrayList<>(Arrays.asList(0, 1)), new ArrayList<>(Arrays.asList(6, 6))));
 
 		convertToPosition();
 		heuristicRate = heuristicRate();
 	}
 
-	/*
-	 * public Board(List<Node> nodes, List<Hole> holes, List<List<Cell>>
-	 * position, int iteration) { this.nodes = nodes; this.holes = holes;
-	 * this.position = position; this.heuristicRate = heuristicRate() +
-	 * iteration; }
-	 */
 	public Board(Board parent) {
 		holes = new ArrayList<>();
-		nodes = new ArrayList<>();
-
-		for (int i = 0; i < verticalSize; i++)
-			position.add(i, new ArrayList<Cell>(Collections.nCopies(horizontalSize, null)));
+		hNodes = new ArrayList<>();
+		vNodes = new ArrayList<>();
 
 		for (int i = 0; i < parent.getHoles().size(); i++)
 			holes.add(i, new Hole(parent.getHoles().get(i)));
 
-		for (int i = 0; i < parent.getNodes().size(); i++)
-			nodes.add(i, new Node(parent.getNodes().get(i)));
+		for (int i = 0; i < parent.getHNodes().size(); i++)
+			hNodes.add(i, new HNode(parent.getHNodes().get(i)));
 
+		for (int i = 0; i < parent.getVNodes().size(); i++)
+			vNodes.add(i, new VNode(parent.getVNodes().get(i)));
+
+		for (int i = 0; i < verticalSize; i++)
+			position.add(i, new ArrayList<Cell>(Collections.nCopies(horizontalSize, null)));
 		convertToPosition();
 	}
 
@@ -115,32 +109,19 @@ public class Board {
 		 * nodes.get(i + 10).getColumns().get(0)); } //return
 		 * Math.min(sumFromFirst, sumFromSecond); return sumFromFirst;
 		 */
-		List<Integer> letters = new ArrayList<>();
-		for (int i = 0; i < horizontalSize; i++) {
-			for (int j = 0; j < verticalSize; j++) {
-				if (position.get(j).get(i) instanceof Node && ((Node) position.get(j).get(i)).getOrient().equals("v")) {
-					if (!letters.contains(position.get(j).get(i).getValue()))
-						letters.add(position.get(j).get(i).getValue());
-				}
-			}
+		Map<Integer, Integer> letters = new HashMap<>();
+		for (VNode vNode : vNodes) {
+			letters.put(vNode.getValue(), vNode.getColumns().get(0) + 1);
 		}
-		int rate = letters.get(1) / letters.get(0) + letters.get(2) / letters.get(0) + letters.get(0) / letters.get(3)
-				+ letters.get(0) / letters.get(4) + letters.get(0) / letters.get(5) + letters.get(2) / letters.get(1)
-				+ letters.get(1) / letters.get(3) + letters.get(1) / letters.get(4) + letters.get(1) / letters.get(5)
-				+ letters.get(2) / letters.get(3) + letters.get(2) / letters.get(4) + letters.get(2) / letters.get(5)
-				+ letters.get(3) / letters.get(4) + letters.get(3) / letters.get(5) + letters.get(4) / letters.get(5);
-		/*
-		 * if (nodes.get(12).getColumns().get(0) >
-		 * nodes.get(11).getColumns().get(0)) rate = rate+10; if
-		 * (nodes.get(11).getColumns().get(0) >
-		 * nodes.get(10).getColumns().get(0)) rate = rate + 10; if
-		 * (nodes.get(10).getColumns().get(0) >
-		 * nodes.get(13).getColumns().get(0)) rate = rate + 10; if
-		 * (nodes.get(13).getColumns().get(0) >
-		 * nodes.get(14).getColumns().get(0)) rate = rate + 10;
-		 * if(nodes.get(14).getColumns().get(0) >
-		 * nodes.get(15).getColumns().get(0)) rate = rate + 10;
-		 */
+		int rate = letters.get(12) / letters.get(11) + letters.get(13) / letters.get(11)
+				+ letters.get(11) / letters.get(14) + letters.get(11) / letters.get(15)
+				+ letters.get(11) / letters.get(16) + letters.get(13) / letters.get(12)
+				+ letters.get(12) / letters.get(14) + letters.get(12) / letters.get(15)
+				+ letters.get(12) / letters.get(16) + letters.get(13) / letters.get(14)
+				+ letters.get(13) / letters.get(15) + letters.get(13) / letters.get(16)
+				+ letters.get(14) / letters.get(15) + letters.get(14) / letters.get(16)
+				+ letters.get(15) / letters.get(16);
+
 		// for ()
 		/*
 		 * for (Hole hole : holes) { //rate = rate * (hole.getColumn() + 1);
@@ -156,9 +137,15 @@ public class Board {
 		for (int i = 0; i < verticalSize; i++)
 			position.set(i, new ArrayList<Cell>(Collections.nCopies(horizontalSize, null)));
 
-		for (Node node : nodes) {
-			for (int i = 0; i < node.getSize(); i++) {
-				position.get(node.getRows().get(i)).set(node.getColumns().get(i), node);
+		for (Node vNode : vNodes) {
+			for (int i = 0; i < vNode.getSize(); i++) {
+				position.get(vNode.getRows().get(i)).set(vNode.getColumns().get(i), vNode);
+			}
+		}
+
+		for (Node hNode : hNodes) {
+			for (int i = 0; i < hNode.getSize(); i++) {
+				position.get(hNode.getRows().get(i)).set(hNode.getColumns().get(i), hNode);
 			}
 		}
 
@@ -175,8 +162,12 @@ public class Board {
 		}
 	}
 
-	public List<Node> getNodes() {
-		return nodes;
+	public List<HNode> getHNodes() {
+		return hNodes;
+	}
+
+	public List<VNode> getVNodes() {
+		return vNodes;
 	}
 
 	public List<Hole> getHoles() {

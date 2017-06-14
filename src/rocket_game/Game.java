@@ -6,7 +6,6 @@ import java.util.List;
 public class Game {
 
 	private final List<Board> open = new ArrayList<Board>();
-	// private final Map<Board, Integer> open = new HashMap<>();
 	private final List<Board> close = new ArrayList<Board>();
 
 	public Game() {
@@ -14,23 +13,11 @@ public class Game {
 		close.clear();
 		Board startBoard = new Board();
 		open.add(startBoard);
-		// open.put(startBoard, startBoard.getHeuristicRate());
 	}
 
 	public void solution() {
+		Board currentBoard = null;
 		for (int i = 0; i < 900000; i++) {
-			// System.out.println(i);
-			// System.out.println("open");
-			// System.out.println(open);
-			// System.out.println("close");
-			// System.out.println(close);
-
-			/*
-			 * Integer minRate = Collections.min(open.values()); for (Board
-			 * opened : open.keySet()) if (open.get(opened) == minRate) {
-			 * currentBoard = opened; break; }
-			 */
-			Board currentBoard = null;
 			Integer minRate = Integer.MAX_VALUE;
 			for (Board opened : open) {
 				if (opened.getHeuristicRate() < minRate) {
@@ -39,9 +26,9 @@ public class Game {
 				}
 			}
 
-			// System.out.println(minRate);
 			if (checkEnd(currentBoard))
 				break;
+
 			if (i % 1000 == 0) {
 				System.out.println(i);
 				System.out.print("open+close: ");
@@ -82,9 +69,10 @@ public class Game {
 			close.add(currentBoard);
 			open.remove(currentBoard);
 		}
-		// System.out.println(open);
-		// open.get(0).printPosition();
-		close.get(close.size() - 1).printPosition();
+		System.out.print("nodes:");
+		System.out.println(open.size() + close.size());
+		System.out.println("ended:");
+		currentBoard.printPosition();
 	}
 
 	private void addToOpen(Board currentBoard, int path) {
@@ -95,7 +83,6 @@ public class Game {
 				break;
 			}
 		}
-		// for (Board opened : open.keySet()) {
 		for (Board opened : open) {
 			if (samePosition(currentBoard, opened)) {
 				same = true;
@@ -106,7 +93,6 @@ public class Game {
 		if (!same) {
 			open.add(currentBoard);
 			currentBoard.updateHeuristicRate(path);
-			// open.put(currentBoard, currentBoard.heuristicRate() + 1);
 		}
 	}
 
@@ -120,28 +106,25 @@ public class Game {
 					|| oldHoles.get(i).getColumn() != currentHoles.get(i).getColumn())
 				return false;
 		}
-		List<Node> oldNodes = old.getNodes();
-		List<Node> currentNodes = current.getNodes();
-		for (int i = 0; i < oldNodes.size(); i++) {
-			if (oldNodes.get(i).getOrient().equals("v")) {
-				for (int j = 0; j < oldNodes.get(i).getSize(); j++) {
-					if (oldNodes.get(i).getRows().get(j) != currentNodes.get(i).getRows().get(j)
-							|| oldNodes.get(i).getColumns().get(j) != currentNodes.get(i).getColumns().get(j))
-						return false;
-				}
+		List<VNode> oldVNodes = old.getVNodes();
+		List<VNode> currentVNodes = current.getVNodes();
+		for (int i = 0; i < oldVNodes.size(); i++) {
+			for (int j = 0; j < oldVNodes.get(i).getSize(); j++) {
+				if (oldVNodes.get(i).getRows().get(j) != currentVNodes.get(i).getRows().get(j)
+						|| oldVNodes.get(i).getColumns().get(j) != currentVNodes.get(i).getColumns().get(j))
+					return false;
 			}
-
 		}
 		return true;
 	}
 
 	private boolean checkEnd(Board board) {
-		List<Node> nodes = board.getNodes();
-		if (nodes.get(12).getColumns().get(0) < nodes.get(11).getColumns().get(0)
-				&& nodes.get(11).getColumns().get(0) < nodes.get(10).getColumns().get(0)
-				&& nodes.get(10).getColumns().get(0) < nodes.get(13).getColumns().get(0)
-				&& nodes.get(13).getColumns().get(0) < nodes.get(14).getColumns().get(0)
-				&& nodes.get(14).getColumns().get(0) < nodes.get(15).getColumns().get(0)) {
+		List<VNode> vNodes = board.getVNodes();
+		if (vNodes.get(2).getColumns().get(0) < vNodes.get(1).getColumns().get(0)
+				&& vNodes.get(1).getColumns().get(0) < vNodes.get(0).getColumns().get(0)
+				&& vNodes.get(0).getColumns().get(0) < vNodes.get(3).getColumns().get(0)
+				&& vNodes.get(3).getColumns().get(0) < vNodes.get(4).getColumns().get(0)
+				&& vNodes.get(4).getColumns().get(0) < vNodes.get(5).getColumns().get(0)) {
 			System.out.println("find");
 			board.printPosition();
 			return true;
@@ -149,3 +132,24 @@ public class Game {
 		return false;
 	}
 }
+
+/*
+ * find 4 4 1 1 14 3 3 12 0 2 2 14 15 16 12 0 11 5 5 15 16 13 0 11 6 6 7 7 13 8
+ * 8 9 9 10 10 nodes:160889 ended: 4 4 1 1 14 3 3 12 0 2 2 14 15 16 12 0 11 5 5
+ * 15 16 13 0 11 6 6 7 7 13 8 8 9 9 10 10
+ */
+
+/*
+ * поиск в ширину 0 1 2 4 5 6 find 4 4 1 1 14 3 3 12 0 2 2 14 15 16 12 0 11 5 5
+ * 15 16 13 0 11 6 6 7 7 13 8 8 9 9 10 10 nodes:181729 ended: 4 4 1 1 14 3 3 12
+ * 0 2 2 14 15 16 12 0 11 5 5 15 16 13 0 11 6 6 7 7 13 8 8 9 9 10 10
+ * 
+ * поиск в глубину (памяти не хватило) 373000 open+close: 748609 2 2 0 0 15 14
+ * 12 13 11 10 10 15 14 12 13 11 7 7 9 9 16 6 6 3 3 4 4 16 1 1 5 5 8 8 0
+ * 
+ * 
+ * [0, 0] [1, 1] [2, 2] [4, 4] [5, 5] [6, 6] 13 11 12 14 15 16 find 4 4 1 1 14 3
+ * 3 12 0 2 2 14 15 16 12 0 11 5 5 15 16 13 0 11 6 6 7 7 13 8 8 9 9 10 10
+ * nodes:123639 ended: 4 4 1 1 14 3 3 12 0 2 2 14 15 16 12 0 11 5 5 15 16 13 0
+ * 11 6 6 7 7 13 8 8 9 9 10 10
+ */
